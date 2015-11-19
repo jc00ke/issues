@@ -38,4 +38,12 @@ defmodule Issues.CLI do
         :help
     end
   end
+
+  def process(:help) do
+    IO.puts """
+    usage: issues <user> <project> [count | #{@default_count}]"
+    """
+
+    System.halt(0)
+  end
 end

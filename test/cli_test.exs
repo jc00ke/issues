@@ -1,7 +1,8 @@
 defmodule CliTest do
   use ExUnit.Case
 
-  import Issues.CLI, only: [parse_args: 1 ]
+  import ExUnit.CaptureIO
+  import Issues.CLI, only: [parse_args: 1, process: 1]
 
   test ":help returned when passed -h" do
     assert parse_args(["-h", "asdf"]) == :help
@@ -17,5 +18,19 @@ defmodule CliTest do
 
   test "default count returned when 2 given" do
     assert parse_args(["a", "b"]) == {"a", "b", 4}
+  end
+
+  test "prints help text when passed :help" do
+    assert Regex.match?(~r/usage/, capture_io(fn ->
+      process(:help)
+    end))
+  end
+
+  test "exits with 0 when passed :help" do
+    fun = fn ->
+      assert process(:help) == :ok
+    end
+
+    capture_io(fun)
   end
 end
