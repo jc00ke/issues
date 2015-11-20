@@ -21,9 +21,9 @@ defmodule CliTest do
   end
 
   test "prints help text when passed :help" do
-    assert Regex.match?(~r/usage/, capture_io(fn ->
-      process(:help)
-    end))
+    ~r/usage/
+      |> Regex.match?(capture_io(fn -> process(:help) end))
+      |> assert
   end
 
   test "exits with 0 when passed :help" do
