@@ -48,4 +48,8 @@ defmodule Issues.CLI do
 
     System.halt(0)
   end
+
+  def process({user, project, _count}) do
+    Issues.GithubIssues.fetch(user, project)
+  end
 end
