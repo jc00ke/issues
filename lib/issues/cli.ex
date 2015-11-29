@@ -52,4 +52,14 @@ defmodule Issues.CLI do
   def process({user, project, _count}) do
     Issues.GithubIssues.fetch(user, project)
   end
+
+  def decode_response({:error, message}) do
+    IO.write :stderr, message
+
+    halt(2)
+  end
+
+  def halt(status \\ 0) do
+    System.halt(status)
+  end
 end

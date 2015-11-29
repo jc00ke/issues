@@ -3,7 +3,7 @@ defmodule CliTest do
   import Mock
 
   import ExUnit.CaptureIO
-  import Issues.CLI, only: [parse_args: 1, process: 1]
+  import Issues.CLI
 
   test ":help returned when passed -h" do
     assert parse_args(["-h", "asdf"]) == :help
@@ -29,7 +29,7 @@ defmodule CliTest do
 
   test "exits with 0 when passed :help" do
     fun = fn ->
-      assert process(:help) == :ok
+      assert catch_exit(process(:help)) == 0
     end
 
     capture_io(fun)
@@ -38,9 +38,27 @@ defmodule CliTest do
   test_with_mock  "calls GithubIssues.fetch when given a tuple",
                   Issues.GithubIssues,
                   [fetch: fn(_user, _project) -> :ok end] do
-                    user = "jc00ke"
-                    project = "issues"
-                    process({user, project, 16})
-                    assert called Issues.GithubIssues.fetch(user, project)
-                  end
+    user = "jc00ke"
+    project = "issues"
+    process({user, project, 16})
+    assert called Issues.GithubIssues.fetch(user, project)
+  end
+
+  test "exits with non-zero when error returned" do
+    fun = fn ->
+      assert catch_exit(decode_response({:error, "msg"})) != 0
+    end
+
+    capture_io(:stderr, fun)
+  end
+
+  test_with_mock  "prints error message when error returned",
+                  Issues.CLI,
+                  [halt: fn(_status) -> :ok end] do
+    captured = capture_io(:stderr, fn -> decode_response({:error, "elephant"}) end)
+    ~r/elephant/
+      |> Regex.match?(captured)
+      |> assert
+    assert called Issues.CLI.halt(2)
+  end
 end
