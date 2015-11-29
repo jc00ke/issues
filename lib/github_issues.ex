@@ -12,11 +12,12 @@ defmodule Issues.GithubIssues do
   end
 
   def handle_response({:ok, %{status_code: 200, body: body, headers: _}}) do
-    { :ok, body }
+    Poison.Parser.parse(body)
   end
 
   def handle_response({:ok, %{status_code: ___, body: body, headers: _}}) do
-    { :error, body }
+    { _, parsed } = Poison.Parser.parse(body)
+    { :error, parsed["message"] }
   end
 
   def handle_response({:error, reason}), do: { :error, reason }

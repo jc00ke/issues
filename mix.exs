@@ -29,7 +29,8 @@ defmodule Issues.Mixfile do
   defp deps do
     [
       {:mock, "~> 0.1.1", only: :test},
-      {:httpoison, "~> 0.8.0"}
+      {:httpoison, "~> 0.8.0"},
+      {:poison, "~> 1.5.0"}
     ]
   end
 end
